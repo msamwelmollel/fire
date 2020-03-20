@@ -45,7 +45,7 @@ train_labels = train_dataset.pop('area')
 test_labels = test_dataset.pop('area')
 test_labels= np.log((test_labels + 1))
 
-print(test_labels.iloc[1:30])
+print(test_labels)
 
 
 
