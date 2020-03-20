@@ -31,7 +31,7 @@ path = "forestfires.csv"
 dataset = pd.read_csv(path,sep=',')
 
 #print(dataset.head())
-dataset = dataset.drop(["month","day"], axis=1)
+dataset = dataset.drop(["month","day","X","Y","FFMC","DMC","DC","ISI"], axis=1)
 #print(dataset.head())
 
 dataset.isna().sum()
@@ -60,11 +60,10 @@ X_train = pd.DataFrame(X_train_maxabs, index=range(X_train_maxabs.shape[0]),
 
 #%%
 #build the model 1
-
-
 def build_model():
   model = keras.Sequential([
     layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+    layers.Dense(128, activation='relu'),
     layers.Dense(128, activation='relu'),
     layers.Dense(64, activation='relu'),
     layers.Dense(1)
@@ -72,10 +71,31 @@ def build_model():
 
   optimizer = tf.keras.optimizers.RMSprop(0.001)
 
-  model.compile(loss='mse',
+  model.compile(loss=root_mean_squared_error,
                 optimizer=optimizer,
-                metrics=['mae', 'mse'])
+                metrics=['mae', 'mse',tf.keras.metrics.RootMeanSquaredError(name='rmse')])
   return model
+
+import keras.backend as K
+def root_mean_squared_error(y_true, y_pred):
+        return K.sqrt(K.mean(K.square(y_pred - y_true))) 
+
+
+
+#def build_model():
+#  model = keras.Sequential([
+#    layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+#    layers.Dense(128, activation='relu'),
+#    layers.Dense(64, activation='relu'),
+#    layers.Dense(1)
+#  ])
+#
+#  optimizer = tf.keras.optimizers.RMSprop(0.001)
+#
+#  model.compile(loss='mse',
+#                optimizer=optimizer,
+#                metrics=['mae', 'mse'])
+#  return model
     
 model = build_model()
 model.summary()
@@ -98,6 +118,24 @@ print(type(labels))
 history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1)
 
 
+#%%
+hist = pd.DataFrame(history.history)
+hist['epoch'] = history.epoch
+hist.tail()
+
+#plotter = tfdocs.plots.HistoryPlotter(smoothing_std=2)
+
+
+
+
+#%%   SVM
+
+from sklearn.svm import SVR
+
+svr_rbf = SVR(kernel='rbf', C=100, gamma=0.1, epsilon=.1)
+svr_lin = SVR(kernel='linear', C=100, gamma='auto')
+svr_poly = SVR(kernel='poly', C=100, gamma='auto', degree=3, epsilon=.1,
+               coef0=1)
 
 
 
