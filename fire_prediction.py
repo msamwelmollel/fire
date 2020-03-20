@@ -16,6 +16,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from sklearn import preprocessing
+
 
 import tensorflow as tf
 
@@ -37,7 +39,7 @@ train_dataset = dataset.sample(frac=0.8,random_state=0)
 test_dataset = dataset.drop(train_dataset.index)
 
 
-sns.pairplot(train_dataset[["X", "Y", "FFMC", "DMC","ISI","temp","RH","wind","rain","area"]], diag_kind="kde")
+#sns.pairplot(train_dataset[["X", "Y", "FFMC", "DMC","ISI","temp","RH","wind","rain","area"]], diag_kind="kde")
 
 #%%
 train_labels = train_dataset.pop('area')
@@ -48,6 +50,7 @@ test_labels= np.log((test_labels + 1))  # purposely to remove the skewness of th
 #print(test_labels)
 
 # Normalize the data
+max_abs_scaler = preprocessing.MaxAbsScaler()
 
 
 
