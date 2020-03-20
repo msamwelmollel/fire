@@ -30,7 +30,9 @@ path = "forestfires.csv"
 
 dataset = pd.read_csv(path,sep=',')
 
-dataset.head()
+#print(dataset.head())
+dataset = dataset.drop(["month","day"], axis=1)
+print(dataset.head())
 
 dataset.isna().sum()
 
@@ -51,6 +53,8 @@ test_labels= np.log((test_labels + 1))  # purposely to remove the skewness of th
 
 # Normalize the data
 max_abs_scaler = preprocessing.MaxAbsScaler()
+X_train_maxabs = max_abs_scaler.fit_transform(train_dataset)
+print(X_train_maxabs.shape)
 
 
 
