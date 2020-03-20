@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import tfdocs
 
 from sklearn import preprocessing
 
@@ -115,7 +116,9 @@ print(type(train_dataset))
 print(type(X_train_maxabs))
 labels= train_labels.to_numpy()
 print(type(labels))
-history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1)
+#history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1)
+
+history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1, callbacks=[tfdocs.modeling.EpochDots()])
 
 
 #%%
