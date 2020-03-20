@@ -54,28 +54,28 @@ test_labels= np.log((test_labels + 1))  # purposely to remove the skewness of th
 # Normalize the data
 max_abs_scaler = preprocessing.MaxAbsScaler()
 X_train_maxabs = max_abs_scaler.fit_transform(train_dataset)
+X_train = pd.DataFrame(X_train_maxabs, index=range(X_train_maxabs.shape[0]),
+                          columns=range(X_train_maxabs.shape[1]))
 #print((X_train_maxabs[:2]))
 
-
+#%%
 #build the model 1
+
 
 def build_model():
   model = keras.Sequential([
     layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+    layers.Dense(128, activation='relu'),
     layers.Dense(64, activation='relu'),
     layers.Dense(1)
   ])
 
   optimizer = tf.keras.optimizers.RMSprop(0.001)
 
-  model.compile(loss=root_mean_squared_error,
+  model.compile(loss='mse',
                 optimizer=optimizer,
-                metrics=['mae', 'mse', 'accuracy'])
+                metrics=['mae', 'mse'])
   return model
-
-import keras.backend as K
-def root_mean_squared_error(y_true, y_pred):
-        return K.sqrt(K.mean(K.square(y_pred - y_true))) 
     
 model = build_model()
 model.summary()
@@ -83,12 +83,19 @@ model.summary()
 
 # test the NN
 
-example_batch = X_train_maxabs[:10]
+example_batch = X_train[:10]
 example_result = model.predict(example_batch)
 print(example_result)
 
-#train the model
-
+##train the model
+EPOCHS = 10000
+print((X_train.shape))
+print((train_labels.shape))
+print(type(train_dataset))
+print(type(X_train_maxabs))
+labels= train_labels.to_numpy()
+print(type(labels))
+history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1)
 
 
 
