@@ -24,7 +24,7 @@ from tensorflow.keras import layers
 
 #print(tf.__version__)
 
-path = "C:/Users/msamw/Google Drive/fire/forestfires.csv"
+path = "forestfires.csv"
 
 dataset = pd.read_csv(path,sep=',')
 
