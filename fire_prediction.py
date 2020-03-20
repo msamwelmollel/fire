@@ -32,7 +32,7 @@ dataset = pd.read_csv(path,sep=',')
 
 #print(dataset.head())
 dataset = dataset.drop(["month","day"], axis=1)
-print(dataset.head())
+#print(dataset.head())
 
 dataset.isna().sum()
 
@@ -54,7 +54,44 @@ test_labels= np.log((test_labels + 1))  # purposely to remove the skewness of th
 # Normalize the data
 max_abs_scaler = preprocessing.MaxAbsScaler()
 X_train_maxabs = max_abs_scaler.fit_transform(train_dataset)
-print(X_train_maxabs.shape)
+#print((X_train_maxabs[:2]))
+
+
+#build the model 1
+
+def build_model():
+  model = keras.Sequential([
+    layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(1)
+  ])
+
+  optimizer = tf.keras.optimizers.RMSprop(0.001)
+
+  model.compile(loss=root_mean_squared_error,
+                optimizer=optimizer,
+                metrics=['mae', 'mse', 'accuracy'])
+  return model
+
+import keras.backend as K
+def root_mean_squared_error(y_true, y_pred):
+        return K.sqrt(K.mean(K.square(y_pred - y_true))) 
+    
+model = build_model()
+model.summary()
+
+
+# test the NN
+
+example_batch = X_train_maxabs[:10]
+example_result = model.predict(example_batch)
+print(example_result)
+
+#train the model
+
+
+
+
 
 
 
