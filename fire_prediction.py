@@ -22,17 +22,21 @@ from sklearn import preprocessing
 
 import tensorflow as tf
 
-from tensorflow import keras
-from tensorflow.keras import layers
 
-
-import tensorflow_docs as tfdocs
-import tensorflow_docs.plots
-import tensorflow_docs.modeling
 
 #%%
 
-#print(tf.__version__)
+from tensorflow import keras
+from tensorflow.keras import layers
+print(tf.__version__)
+
+# import tensorflow_docs as tfdocs
+# import tensorflow_docs.plots
+# import tensorflow_docs.modeling
+
+#%%
+
+print(tf.__version__)
 
 path = "forestfires.csv"
 
