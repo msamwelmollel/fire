@@ -44,6 +44,14 @@ train_dataset = train_dataset.drop(value, axis=1)
 train_dataset.corr()['burn_area'].sort_values().plot(kind='bar', figsize=(18,6))
 
 
+# Date variables
+train_dataset['month'] = train_dataset.date.dt.month
+train_dataset['year'] = train_dataset.date.dt.year
+
+# Plotting mean burn_area for each month - very strong mid-year peak (dry season)
+train_dataset.groupby('month').mean().reset_index().plot(y='burn_area', x='month', kind='bar')
+
+
 
 
 
