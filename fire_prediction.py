@@ -173,17 +173,25 @@ model = build_model()
 early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
 early_history = model.fit(X_train_maxabs, labels, 
-                    epochs=EPOCHS, validation_split = 0.2, verbose=0, 
+                    epochs=EPOCHS, validation_split = 0.2, verbose=1, 
                     callbacks=[early_stop, tfdocs.modeling.EpochDots()])
 
-plotter.plot({'Early Stopping': early_history}, metric = "mae")
-plt.ylim([0, 10])
-plt.ylabel('MAE [area]')
+# plotter.plot({'Early Stopping': early_history}, metric = "mae")
+# plt.ylim([0, 10])
+# plt.ylabel('MAE [area]')
 
-# evaluating test set
-loss, mae, mse = model.evaluate(X_test_maxabs, test_labels, verbose=2)
+#%% evaluating test set
+test_labels= test_labels.to_numpy()
 
-#print("Testing set Mean Abs Error: {:5.2f} area".format(mae))
+print(X_test_maxabs.shape)
+print(test_labels.shape)
+
+loss, mae, mse, rmse = model.evaluate(X_test_maxabs, test_labels, verbose=1)
+print(mae)
+print(mse)
+print(rmse)
+
+print("Testing set Mean Abs Error: {:5.2f} area".format(mae))
 
 
 
