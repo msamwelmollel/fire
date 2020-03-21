@@ -12,6 +12,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import pathlib
 
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import interactive
+interactive(True)
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -30,9 +33,9 @@ from tensorflow import keras
 from tensorflow.keras import layers
 print(tf.__version__)
 
-# import tensorflow_docs as tfdocs
-# import tensorflow_docs.plots
-# import tensorflow_docs.modeling
+import tensorflow_docs as tfdocs
+import tensorflow_docs.plots
+import tensorflow_docs.modeling
 
 #%%
 
@@ -70,12 +73,18 @@ X_train = pd.DataFrame(X_train_maxabs, index=range(X_train_maxabs.shape[0]),
                           columns=range(X_train_maxabs.shape[1]))
 #print((X_train_maxabs[:2]))
 
+
+X_test_maxabs = max_abs_scaler.fit_transform(test_dataset)
+
+
+X_test = pd.DataFrame(X_test_maxabs, index=range(X_test_maxabs.shape[0]),
+                          columns=range(X_test_maxabs.shape[1]))
+
 #%%
 #build the model 1
 def build_model():
   model = keras.Sequential([
     layers.Dense(64, activation='relu', input_shape=[len(train_dataset.keys())]),
-    layers.Dense(128, activation='relu'),
     layers.Dense(128, activation='relu'),
     layers.Dense(64, activation='relu'),
     layers.Dense(1)
@@ -120,16 +129,16 @@ example_result = model.predict(example_batch)
 print(example_result)
 
 ##train the model
-EPOCHS = 10000
+EPOCHS = 1000
 print((X_train.shape))
 print((train_labels.shape))
 print(type(train_dataset))
 print(type(X_train_maxabs))
 labels= train_labels.to_numpy()
 print(type(labels))
-history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1)
 
-#history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=1, callbacks=[tfdocs.modeling.EpochDots()])
+
+history = model.fit(X_train_maxabs, labels,epochs=EPOCHS, validation_split = 0.2, verbose=0, callbacks=[tfdocs.modeling.EpochDots()])
 
 
 #%%
@@ -137,7 +146,45 @@ hist = pd.DataFrame(history.history)
 hist['epoch'] = history.epoch
 hist.tail()
 
-#plotter = tfdocs.plots.HistoryPlotter(smoothing_std=2)
+plotter = tfdocs.plots.HistoryPlotter(smoothing_std=2)
+
+plotter.plot({'Basic': history}, metric = "mae")
+plt.ylim([0, 10])
+plt.ylabel('MAE [area]')
+plt.show()
+
+plotter.plot({'Basic': history}, metric = "mse")
+plt.ylim([0, 20])
+plt.ylabel('MSE [area^2]')
+plt.show()
+
+plotter.plot({'Basic': history}, metric = "rmse")
+plt.ylim([0, 20])
+plt.ylabel('RMSE [area]')
+plt.show()
+
+
+
+#%% implenting early stop
+
+model = build_model()
+
+# The patience parameter is the amount of epochs to check for improvement
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+
+early_history = model.fit(X_train_maxabs, labels, 
+                    epochs=EPOCHS, validation_split = 0.2, verbose=0, 
+                    callbacks=[early_stop, tfdocs.modeling.EpochDots()])
+
+plotter.plot({'Early Stopping': early_history}, metric = "mae")
+plt.ylim([0, 10])
+plt.ylabel('MAE [area]')
+
+# evaluating test set
+loss, mae, mse = model.evaluate(X_test_maxabs, test_labels, verbose=2)
+
+#print("Testing set Mean Abs Error: {:5.2f} area".format(mae))
+
 
 
 
