@@ -194,6 +194,14 @@ print(rmse)
 print("Testing set Mean Abs Error: {:5.2f} area".format(mae))
 
 
+#%% prediction 
+
+test_predictions = model.predict(X_test_maxabs).flatten()
+
+
+
+
+
 
 
 
